@@ -75,6 +75,17 @@ Class.new(AuditTest) do
     refute_includes attrs, "body"
   end
 
+  def test_ignores_nils_on_create
+    Audit.audit(user: @john) do
+      Post.create(title: "How to write Ruby code", body: nil)
+    end
+
+    attrs = Audit.where(user_id: @john.id).first.changes.first.entries.map(&:attribute_name)
+
+    assert_includes attrs, "title"
+    refute_includes attrs, "body"
+  end
+
   def test_logs_id_change_to_signal_creates
     post = Audit.audit(user: @john) do
       Post.create(title: "How to write Ruby code")

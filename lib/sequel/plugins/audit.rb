@@ -37,7 +37,7 @@ module Sequel::Plugins::Audit
       return super if ::Audit === self || ::Audit::Change === self || ::Audit::Entry === self
 
       if new?
-        cols = values.keys + [:id]
+        cols = values.keys.select { |k| values[k] } + [:id]
         changes = -> _ { }
       else
         cols = changed_columns.dup
